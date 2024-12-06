@@ -5,12 +5,12 @@ namespace RubiksCubeApp.Game;
 
 internal sealed class RubiksCube
 {
-    private const short _cubeSize = 3;
+    private const short CubeSize = 3;
     private Faces Faces { get; set; }
     
     public RubiksCube()
     {
-        FillCube(_cubeSize);
+        FillCube(CubeSize);
     }
 
     public void FillCube(short size)
@@ -24,75 +24,94 @@ internal sealed class RubiksCube
             new CubeFace("D", ConsoleColor.Gray, size));
     } 
     
-    public void Rotate(string key) // TODO: Use Enum 
+    public void Rotate(string keyboardKey) // TODO: Use Enum 
     {
-        if (key == "U") // TODO: Create enum + map and use like Keys.Up
+        var key = keyboardKey.ToUpper();
+
+        switch (key)
         {
-            Faces.UpFace.RotateFaceClockwise(); 
+            // TODO: Create enum + map and use like Keys.Up
+            case "U":
+            {
+                Faces.UpFace.RotateFaceClockwise(); 
             
-            // TODO: Many Duplications - move to method move(main, [up, right, down, left]) where up -> right -> down -> left ?? TO BE SURE??
-            var tmp= Faces.LeftFace.GetUpperColors();
-            Faces.LeftFace.SetUpperColors(Faces.FrontFace.GetUpperColors());
-            Faces.FrontFace.SetUpperColors(Faces.RightFace.GetUpperColors());
-            Faces.RightFace.SetUpperColors(Faces.BackFace.GetUpperColors());
-            Faces.BackFace.SetUpperColors(tmp);
-        }
-        else if (key == "F")
-        {
-            Faces.FrontFace.RotateFaceClockwise(); 
+                var tmp= Faces.LeftFace.GetUpperColors();
+                Faces.LeftFace.SetUpperColors(Faces.FrontFace.GetUpperColors());
+                Faces.FrontFace.SetUpperColors(Faces.RightFace.GetUpperColors());
+                Faces.RightFace.SetUpperColors(Faces.BackFace.GetUpperColors());
+                Faces.BackFace.SetUpperColors(tmp);
+                break;
+            }
+            case "F":
+            {
+                Faces.FrontFace.RotateFaceClockwise(); 
             
-            var tmp= Faces.LeftFace.GetRightColors();
-            Faces.LeftFace.SetRightColors(Faces.DownFace.GetUpperColors());
-            Faces.DownFace.SetUpperColors(Faces.RightFace.GetLeftColors());
-            Faces.RightFace.SetLeftColors(Faces.UpFace.GetBottomColors());
-            Faces.UpFace.SetBottomColors(tmp);
-        }
-        else if (key == "D")
-        {
-            Faces.DownFace.RotateFaceClockwise(); 
+                var tmp= Faces.LeftFace.GetRightColors();
+                Faces.LeftFace.SetRightColors(Faces.DownFace.GetUpperColors());
+                Faces.DownFace.SetUpperColors(Faces.RightFace.GetLeftColors());
+                Faces.RightFace.SetLeftColors(Faces.UpFace.GetBottomColors());
+                Faces.UpFace.SetBottomColors(tmp);
+                break;
+            }
+            case "D":
+            {
+                Faces.DownFace.RotateFaceClockwise(); 
             
-            var tmp= Faces.LeftFace.GetBottomColors();
-            Faces.LeftFace.SetBottomColors(Faces.BackFace.GetBottomColors());
-            Faces.BackFace.SetBottomColors(Faces.RightFace.GetBottomColors());
-            Faces.RightFace.SetBottomColors(Faces.FrontFace.GetBottomColors());
-            Faces.FrontFace.SetBottomColors(tmp);
-        }
-        else if (key == "L")
-        {
-            Faces.LeftFace.RotateFaceClockwise();
+                var tmp= Faces.LeftFace.GetBottomColors();
+                Faces.LeftFace.SetBottomColors(Faces.BackFace.GetBottomColors());
+                Faces.BackFace.SetBottomColors(Faces.RightFace.GetBottomColors());
+                Faces.RightFace.SetBottomColors(Faces.FrontFace.GetBottomColors());
+                Faces.FrontFace.SetBottomColors(tmp);
+                break;
+            }
+            case "L":
+            {
+                Faces.LeftFace.RotateFaceClockwise();
             
-            var tmp= Faces.FrontFace.GetLeftColors();
-            Faces.FrontFace.SetLeftColors(Faces.UpFace.GetLeftColors());
-            Faces.UpFace.SetLeftColors(Faces.BackFace.GetRightColors());
-            Faces.BackFace.SetRightColors(Faces.DownFace.GetLeftColors());
-            Faces.DownFace.SetLeftColors(tmp);
-        }
-        else if (key == "R")
-        {
-            Faces.RightFace.RotateFaceClockwise();
+                var tmp= Faces.FrontFace.GetLeftColors();
+                Faces.FrontFace.SetLeftColors(Faces.UpFace.GetLeftColors());
+                Faces.UpFace.SetLeftColors(Faces.BackFace.GetRightColors());
+                Faces.BackFace.SetRightColors(Faces.DownFace.GetLeftColors());
+                Faces.DownFace.SetLeftColors(tmp);
+                break;
+            }
+            case "R":
+            {
+                Faces.RightFace.RotateFaceClockwise();
             
-            var tmp= Faces.FrontFace.GetRightColors();
-            Faces.FrontFace.SetRightColors(Faces.DownFace.GetRightColors());
-            Faces.DownFace.SetRightColors(Faces.BackFace.GetLeftColors());
-            Faces.BackFace.SetLeftColors(Faces.UpFace.GetRightColors());
-            Faces.UpFace.SetRightColors(tmp);
-        }
-        else if (key == "B")
-        {
-            Faces.BackFace.RotateFaceClockwise();
+                var tmp= Faces.FrontFace.GetRightColors();
+                Faces.FrontFace.SetRightColors(Faces.DownFace.GetRightColors());
+                Faces.DownFace.SetRightColors(Faces.BackFace.GetLeftColors());
+                Faces.BackFace.SetLeftColors(Faces.UpFace.GetRightColors());
+                Faces.UpFace.SetRightColors(tmp);
+                break;
+            }
+            case "T":
+            {
+                Faces.RightFace.RotateFaceClockwise();
             
-            var tmp= Faces.RightFace.GetRightColors();
-            Faces.RightFace.SetRightColors(Faces.DownFace.GetBottomColors());
-            Faces.DownFace.SetBottomColors(Faces.LeftFace.GetLeftColors());
-            Faces.LeftFace.SetLeftColors(Faces.UpFace.GetUpperColors());
-            Faces.UpFace.SetUpperColors(tmp);
-        } else if (key == "R")
-        {
-            FillCube(_cubeSize); 
+                var tmp= Faces.FrontFace.GetRightColors();
+                Faces.FrontFace.SetRightColors(Faces.DownFace.GetRightColors());
+                Faces.DownFace.SetRightColors(Faces.BackFace.GetLeftColors());
+                Faces.BackFace.SetLeftColors(Faces.UpFace.GetRightColors());
+                Faces.UpFace.SetRightColors(tmp);
+                break;
+            }
+            case "B":
+            {
+                Faces.BackFace.RotateFaceClockwise();
+            
+                var tmp= Faces.RightFace.GetRightColors();
+                Faces.RightFace.SetRightColors(Faces.DownFace.GetBottomColors());
+                Faces.DownFace.SetBottomColors(Faces.LeftFace.GetLeftColors());
+                Faces.LeftFace.SetLeftColors(Faces.UpFace.GetUpperColors());
+                Faces.UpFace.SetUpperColors(tmp);
+                break;
+            }
         }
     }
     
-    public void Restart() => FillCube(_cubeSize);
+    public void Restart() => FillCube(CubeSize);
 
     public void Display(IDisplayGame displayGame)
     {
