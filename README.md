@@ -1,5 +1,7 @@
 ﻿# Build
-You must have .NET 8 runtime tu run this project
+You must have .NET 8 SDK and runtime tu run this project
+
+https://dotnet.microsoft.com/en-us/download/dotnet?cid=getdotnetcorecli
 
 ```dotnet build```
 
