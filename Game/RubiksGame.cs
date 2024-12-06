@@ -4,8 +4,11 @@ namespace RubiksCubeApp.Game;
 
 internal class RubiksGame
 {
+    private bool _isRunning = true;
     private readonly Dictionary<string, Action> _keyActionMap = new ();
     private const string QuitKey = "Q";
+    private const string RestartKey = "X";
+    
     public RubiksGame()
     {        
         RubiksCube = new RubiksCube();
@@ -16,16 +19,18 @@ internal class RubiksGame
         _keyActionMap.Add("D", () => RubiksCube.Rotate("D"));
         _keyActionMap.Add("L", () => RubiksCube.Rotate("L"));
         _keyActionMap.Add("R", () => RubiksCube.Rotate("R"));
+        _keyActionMap.Add(RestartKey, () => RubiksCube.Restart());
+        _keyActionMap.Add(QuitKey, () => _isRunning = false);
     }
 
     private RubiksCube RubiksCube { get; set; }
 
     public void Run(IDisplayGame displayGame)
     {
-        RubiksCube.FillCube(3);
+        RubiksCube.Restart();
         RubiksCube.Display(displayGame);
         
-        while (true)
+        while (_isRunning)
         {
             var keyboardKey = Console.ReadKey();
             

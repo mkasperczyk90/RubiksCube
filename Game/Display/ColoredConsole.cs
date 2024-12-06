@@ -75,7 +75,7 @@ public class ColoredConsole: IDisplayGame
         }
         
         Console.ResetColor();
-        Console.Write("Please enter key (Q - quit, U, D, L, R, F, B)");
+        Console.Write("Please enter key (Q - quit, X - restart, U, D, L, R, F, B)");
     }
 
     private void PrintFace(int col, int row, ConsoleColor[,] colors, string name)

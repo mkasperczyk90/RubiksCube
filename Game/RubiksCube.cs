@@ -5,11 +5,12 @@ namespace RubiksCubeApp.Game;
 
 internal sealed class RubiksCube
 {
+    private const short _cubeSize = 3;
     private Faces Faces { get; set; }
     
     public RubiksCube()
     {
-        FillCube(3);
+        FillCube(_cubeSize);
     }
 
     public void FillCube(short size)
@@ -63,7 +64,7 @@ internal sealed class RubiksCube
             var tmp= Faces.FrontFace.GetLeftColors();
             Faces.FrontFace.SetLeftColors(Faces.UpFace.GetLeftColors());
             Faces.UpFace.SetLeftColors(Faces.BackFace.GetRightColors());
-            Faces.BackFace.SetLeftColors(Faces.DownFace.GetLeftColors());
+            Faces.BackFace.SetRightColors(Faces.DownFace.GetLeftColors());
             Faces.DownFace.SetLeftColors(tmp);
         }
         else if (key == "R")
@@ -85,8 +86,13 @@ internal sealed class RubiksCube
             Faces.DownFace.SetBottomColors(Faces.LeftFace.GetLeftColors());
             Faces.LeftFace.SetLeftColors(Faces.UpFace.GetUpperColors());
             Faces.UpFace.SetUpperColors(tmp);
+        } else if (key == "R")
+        {
+            FillCube(_cubeSize); 
         }
     }
+    
+    public void Restart() => FillCube(_cubeSize);
 
     public void Display(IDisplayGame displayGame)
     {
