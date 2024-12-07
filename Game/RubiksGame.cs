@@ -1,60 +1,69 @@
-﻿using RubiksCubeApp.Game.Display;
+﻿using RubiksCubeApp.Game.Constants;
+using RubiksCubeApp.Game.Display;
 
 namespace RubiksCubeApp.Game;
 
 internal class RubiksGame
 {
+    private readonly Dictionary<string, Action> _keyActionMap = new();
+    private readonly Dictionary<string, Action> _keyWithShiftActionMap = new();
+    private readonly RubiksCube _rubiksCube;
     private bool _isRunning = true;
-    private readonly Dictionary<string, Action> _keyActionMap = new ();
-    private const string QuitKey = "Q";
-    private const string RestartKey = "X";
-    
+
     public RubiksGame()
-    {        
-        RubiksCube = new RubiksCube();
+    {
+        _rubiksCube = new RubiksCube();
 
-        _keyActionMap.Add("F", () => RubiksCube.Rotate("F")); // TODO: Remove magic string - some kind of dictionary/enum
-        _keyActionMap.Add("B", () => RubiksCube.Rotate("B"));
-        _keyActionMap.Add("U", () => RubiksCube.Rotate("U"));
-        _keyActionMap.Add("D", () => RubiksCube.Rotate("D"));
-        _keyActionMap.Add("L", () => RubiksCube.Rotate("L"));
-        _keyActionMap.Add("R", () => RubiksCube.Rotate("R"));
-        _keyActionMap.Add(RestartKey, () => RubiksCube.Restart());
-        _keyActionMap.Add(QuitKey, () => _isRunning = false);
+        _keyWithShiftActionMap.Add(CubeFaceType.Front.Label,
+            () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Front.Key));
+        _keyWithShiftActionMap.Add(CubeFaceType.Back.Label,
+            () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Back.Key));
+        _keyWithShiftActionMap.Add(CubeFaceType.Up.Label, () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Up.Key));
+        _keyWithShiftActionMap.Add(CubeFaceType.Down.Label,
+            () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Down.Key));
+        _keyWithShiftActionMap.Add(CubeFaceType.Left.Label,
+            () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Left.Key));
+        _keyWithShiftActionMap.Add(CubeFaceType.Right.Label,
+            () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Right.Key));
+
+        _keyActionMap.Add(CubeFaceType.Front.Label, () => _rubiksCube.RotateClockwise(CubeFaceType.Front.Key));
+        _keyActionMap.Add(CubeFaceType.Back.Label, () => _rubiksCube.RotateClockwise(CubeFaceType.Back.Key));
+        _keyActionMap.Add(CubeFaceType.Up.Label, () => _rubiksCube.RotateClockwise(CubeFaceType.Up.Key));
+        _keyActionMap.Add(CubeFaceType.Down.Label, () => _rubiksCube.RotateClockwise(CubeFaceType.Down.Key));
+        _keyActionMap.Add(CubeFaceType.Left.Label, () => _rubiksCube.RotateClockwise(CubeFaceType.Left.Key));
+        _keyActionMap.Add(CubeFaceType.Right.Label, () => _rubiksCube.RotateClockwise(CubeFaceType.Right.Key));
+        _keyActionMap.Add(KeyboardKeys.Restart, () => _rubiksCube.Restart());
+        _keyActionMap.Add(KeyboardKeys.Exit, () => _isRunning = false);
     }
-
-    private RubiksCube RubiksCube { get; set; }
 
     public void Run(IDisplayGame displayGame)
     {
-        RubiksCube.Restart();
-        RubiksCube.Display(displayGame);
-        
+        _rubiksCube.Restart();
+        _rubiksCube.Display(displayGame);
+
         while (_isRunning)
         {
             var keyboardKey = Console.ReadKey();
-            
-            if (keyboardKey.Key.ToString() == QuitKey)
+            var isShiftClicked = (keyboardKey.Modifiers & ConsoleModifiers.Shift) != 0;
+
+            if (keyboardKey.Key.ToString() == KeyboardKeys.Exit)
             {
-                RubiksCube.Display(displayGame);
+                _rubiksCube.Display(displayGame);
                 Console.WriteLine("\n Thanks for playing! Press any key to exit.");
                 return;
             }
+
+            var hasKey = isShiftClicked
+                ? _keyWithShiftActionMap.TryGetValue(keyboardKey.Key.ToString(), out var action)
+                : // maybe use Mediator 
+                _keyActionMap.TryGetValue(keyboardKey.Key.ToString(), out action);
+
+            if (hasKey)
+                action?.Invoke();
             else
-            {
-                bool hasKey = _keyActionMap.TryGetValue(keyboardKey.Key.ToString(), out Action action); // maybe use Mediator 
+                Console.WriteLine("\n No such key.");
 
-                if (hasKey)
-                {
-                    action?.Invoke();
-                }
-                else
-                {
-                    Console.WriteLine("\n No such key.");
-                }
-            }
-
-            RubiksCube.Display(displayGame);
+            _rubiksCube.Display(displayGame);
         }
     }
 }

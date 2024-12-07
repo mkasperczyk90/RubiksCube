@@ -8,15 +8,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="ColorConsole\**" />
+        <Compile Remove="ColorConsole\**"/>
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Remove="ColorConsole\**" />
+        <EmbeddedResource Remove="ColorConsole\**"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="ColorConsole\**" />
+        <None Remove="ColorConsole\**"/>
     </ItemGroup>
 
 </Project>

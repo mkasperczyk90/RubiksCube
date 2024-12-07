@@ -3,5 +3,5 @@
 using RubiksCubeApp.Game;
 using RubiksCubeApp.Game.Display;
 
-RubiksGame game = new RubiksGame();
-game.Run(new ColoredConsole()); 
+var game = new RubiksGame();
+game.Run(new ColoredConsole());
