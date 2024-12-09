@@ -7,9 +7,26 @@ public class ColoredConsole : IDisplayGame
     private const int WidthDisplayCount = 4;
     private const int HeightDisplayCount = 3;
     private const string NewLine = "\n";
-    private ConsoleColor DefaultBackgroundColor { get; } = ConsoleColor.Black;
-    private char DefaultSquareCharacter { get; } = '0';
-
+    private const char DefaultSquareCharacter = '0';
+    private const ConsoleColor DefaultBackgroundColor = ConsoleColor.Black;
+    
+    private IList<Func<FaceDisplayDimensions, bool>> GetAllPrintActions(CubeFaces cubeFaces)
+    {
+        IList<Func<FaceDisplayDimensions, bool>> printActions = new List<Func<FaceDisplayDimensions, bool>>();
+        printActions.Add((faceDimension) => PrintSquareIfInPlace(cubeFaces.UpFace, CubeFaceType.Up.Row, CubeFaceType.Up.Column, faceDimension));
+        printActions.Add((faceDimension) => PrintSquareIfInPlace(cubeFaces.LeftFace, CubeFaceType.Left.Row, CubeFaceType.Left.Column, faceDimension));
+        printActions.Add((faceDimension) => PrintSquareIfInPlace(cubeFaces.FrontFace, CubeFaceType.Front.Row, CubeFaceType.Front.Column, faceDimension));
+        printActions.Add((faceDimension) => PrintSquareIfInPlace(cubeFaces.RightFace, CubeFaceType.Right.Row, CubeFaceType.Right.Column, faceDimension));
+        printActions.Add((faceDimension) => PrintSquareIfInPlace(cubeFaces.BackFace, CubeFaceType.Back.Row, CubeFaceType.Back.Column, faceDimension));
+        printActions.Add((faceDimension) => PrintSquareIfInPlace(cubeFaces.DownFace, CubeFaceType.Down.Row, CubeFaceType.Down.Column, faceDimension));
+        printActions.Add((faceDimension) =>
+        {
+            PrintNoSquere(); 
+            return true;
+        });
+        return printActions;
+    }
+    
     /*
      * Display Cube as a matrix in console. For 3x3 cube
      *
@@ -34,40 +51,18 @@ public class ColoredConsole : IDisplayGame
         var displayWidth = width * WidthDisplayCount;
         var displayHeight = height * HeightDisplayCount;
 
+        var printActions = GetAllPrintActions(cubeFaces);
+
         for (var row = 0; row < displayHeight; row++)
         {
             for (var column = 0; column < displayWidth; column++)
             {
                 var faceDimension = new FaceDisplayDimensions(row, column, width, height);
 
-                if (IfInPlace(CubeFaceType.Up.Row, CubeFaceType.Up.Column, faceDimension))
+                foreach (var printAction in printActions)
                 {
-                    PrintSquare(cubeFaces.UpFace, CubeFaceType.Up.Row, CubeFaceType.Up.Column, faceDimension);
-                }
-                else if (PrintFaceIfInPlace(cubeFaces.LeftFace, CubeFaceType.Left.Row, CubeFaceType.Left.Column,
-                             faceDimension))
-                {
-                }
-                else if (PrintFaceIfInPlace(cubeFaces.FrontFace, CubeFaceType.Front.Row, CubeFaceType.Front.Column,
-                             faceDimension))
-                {
-                }
-                else if (PrintFaceIfInPlace(cubeFaces.RightFace, CubeFaceType.Right.Row, CubeFaceType.Right.Column,
-                             faceDimension))
-                {
-                }
-                else if (PrintFaceIfInPlace(cubeFaces.BackFace, CubeFaceType.Back.Row, CubeFaceType.Back.Column,
-                             faceDimension))
-                {
-                }
-                else if (PrintFaceIfInPlace(cubeFaces.DownFace, CubeFaceType.Down.Row, CubeFaceType.Down.Column,
-                             faceDimension))
-                {
-                }
-                else
-                {
-                    Console.BackgroundColor = DefaultBackgroundColor;
-                    Console.Write(DefaultSquareCharacter);
+                    var result = printAction(faceDimension);
+                    if (result) break; 
                 }
             }
 
@@ -76,9 +71,9 @@ public class ColoredConsole : IDisplayGame
         }
 
         Console.ResetColor();
-        Console.Write("Please enter key (Q - quit, X - restart or move clockwise using U, D, L, R, F, B. To move anti-clockwise click shift)");
+        Console.WriteLine("Please enter key (Q - quit, X - restart or move clockwise using keys U, D, L, R, F, B. To move anti-clockwise press shift SHIFT and key)");
     }
-    
+
     private bool IfInPlace(int row, int column, FaceDisplayDimensions faceDimensions)
     {
         return IsInColumn(column, faceDimensions.Column, faceDimensions.Width) &&
@@ -92,24 +87,27 @@ public class ColoredConsole : IDisplayGame
             faceDimensions.Row - (row - 1) * faceDimensions.Height, cubeFace.Bricks, cubeFace.Name);
     }
     
-    private bool PrintFaceIfInPlace(CubeFace cubeFace, int row, int column, FaceDisplayDimensions faceDimensions)
+    private bool PrintSquareIfInPlace(CubeFace cubeFace, int row, int column, FaceDisplayDimensions faceDimensions)
     {
-        if (IfInPlace(row, column, faceDimensions))
-        {
-            PrintSquare(cubeFace, row, column, faceDimensions);
-            return true;
-        }
+        if (!IfInPlace(row, column, faceDimensions)) return false;
+        PrintSquare(cubeFace, row, column, faceDimensions);
+        return true;
 
-        return false;
     }
 
-    private void PrintFace(int col, int row, ConsoleColor[,] colors, string name)
+    private static void PrintNoSquere()
+    {
+        Console.BackgroundColor = DefaultBackgroundColor;
+        Console.Write(DefaultSquareCharacter);
+    }
+
+    private static void PrintFace(int col, int row, ConsoleColor[,] colors, string name)
     {
         Console.BackgroundColor = colors[col, row];
         Console.Write(name);
     }
 
-    private bool IsInColumn(int columnNumber, int column, int width)
+    private static bool IsInColumn(int columnNumber, int column, int width)
     {
         var arrayColumnNumber = columnNumber - 1;
         var startColumnPosition = arrayColumnNumber * width - 1;
@@ -118,7 +116,7 @@ public class ColoredConsole : IDisplayGame
         return column > startColumnPosition && column < endColumnPosition;
     }
 
-    private bool IsInRow(int rowNumber, int row, int height)
+    private static bool IsInRow(int rowNumber, int row, int height)
     {
         var arrayRowNumber = rowNumber - 1;
         var startRowPosition = arrayRowNumber * height - 1;
