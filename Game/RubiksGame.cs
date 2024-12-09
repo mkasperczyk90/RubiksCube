@@ -8,23 +8,20 @@ internal class RubiksGame
     private readonly Dictionary<string, Action> _keyActionMap = new();
     private readonly Dictionary<string, Action> _keyWithShiftActionMap = new();
     private readonly RubiksCube _rubiksCube;
+    private IDisplayGame _displayGame;
     private bool _isRunning = true;
 
     public RubiksGame()
     {
         _rubiksCube = new RubiksCube();
-
-        _keyWithShiftActionMap.Add(CubeFaceType.Front.Label,
-            () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Front.Key));
-        _keyWithShiftActionMap.Add(CubeFaceType.Back.Label,
-            () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Back.Key));
+        _displayGame = new ColoredConsole();
+        
+        _keyWithShiftActionMap.Add(CubeFaceType.Front.Label, () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Front.Key));
+        _keyWithShiftActionMap.Add(CubeFaceType.Back.Label, () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Back.Key));
         _keyWithShiftActionMap.Add(CubeFaceType.Up.Label, () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Up.Key));
-        _keyWithShiftActionMap.Add(CubeFaceType.Down.Label,
-            () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Down.Key));
-        _keyWithShiftActionMap.Add(CubeFaceType.Left.Label,
-            () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Left.Key));
-        _keyWithShiftActionMap.Add(CubeFaceType.Right.Label,
-            () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Right.Key));
+        _keyWithShiftActionMap.Add(CubeFaceType.Down.Label, () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Down.Key));
+        _keyWithShiftActionMap.Add(CubeFaceType.Left.Label, () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Left.Key));
+        _keyWithShiftActionMap.Add(CubeFaceType.Right.Label, () => _rubiksCube.RotateAntiClockwise(CubeFaceType.Right.Key));
 
         _keyActionMap.Add(CubeFaceType.Front.Label, () => _rubiksCube.RotateClockwise(CubeFaceType.Front.Key));
         _keyActionMap.Add(CubeFaceType.Back.Label, () => _rubiksCube.RotateClockwise(CubeFaceType.Back.Key));
@@ -36,10 +33,15 @@ internal class RubiksGame
         _keyActionMap.Add(KeyboardKeys.Exit, () => _isRunning = false);
     }
 
-    public void Run(IDisplayGame displayGame)
+    public void SetDisplay(IDisplayGame displayGame)
+    {
+        _displayGame = displayGame;
+    }
+    
+    public void Run()
     {
         _rubiksCube.Restart();
-        _rubiksCube.Display(displayGame);
+        _rubiksCube.Display(_displayGame);
 
         while (_isRunning)
         {
@@ -48,22 +50,21 @@ internal class RubiksGame
 
             if (keyboardKey.Key.ToString() == KeyboardKeys.Exit)
             {
-                _rubiksCube.Display(displayGame);
+                _rubiksCube.Display(_displayGame);
                 Console.WriteLine("\n Thanks for playing! Press any key to exit.");
                 return;
             }
 
             var hasKey = isShiftClicked
                 ? _keyWithShiftActionMap.TryGetValue(keyboardKey.Key.ToString(), out var action)
-                : // maybe use Mediator 
-                _keyActionMap.TryGetValue(keyboardKey.Key.ToString(), out action);
+                : _keyActionMap.TryGetValue(keyboardKey.Key.ToString(), out action);
 
             if (hasKey)
                 action?.Invoke();
             else
                 Console.WriteLine("\n No such key.");
 
-            _rubiksCube.Display(displayGame);
+            _rubiksCube.Display(_displayGame);
         }
     }
 }

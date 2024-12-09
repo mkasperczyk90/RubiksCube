@@ -12,11 +12,11 @@ internal sealed class RubiksCube
         FillCube(CubeSize);
     }
 
-    private Faces Faces { get; set; }
+    private CubeFaces CubeFaces { get; set; }
 
-    public void FillCube(short size)
+    private void FillCube(short size)
     {
-        Faces = new Faces(
+        CubeFaces = new CubeFaces(
             new CubeFace(CubeFaceType.Front.Label, CubeFaceType.Front.Color, size),
             new CubeFace(CubeFaceType.Back.Label, CubeFaceType.Back.Color, size),
             new CubeFace(CubeFaceType.Left.Label, CubeFaceType.Left.Color, size),
@@ -27,14 +27,12 @@ internal sealed class RubiksCube
 
     public void RotateClockwise(string keyboardKey)
     {
-        CubeMove move = new CubeMove();
-        move.RotateClockwise(Faces, keyboardKey);
+        CubeFaces.RotateClockwise(keyboardKey);
     }
 
     public void RotateAntiClockwise(string keyboardKey)
     {
-        CubeMove move = new CubeMove();
-        move.RotateAntiClockwise(Faces, keyboardKey);
+        CubeFaces.RotateAntiClockwise(keyboardKey);
     }
 
     public void Restart()
@@ -44,6 +42,6 @@ internal sealed class RubiksCube
 
     public void Display(IDisplayGame displayGame)
     {
-        displayGame.ShowCube(Faces);
+        displayGame.ShowCube(CubeFaces);
     }
 }

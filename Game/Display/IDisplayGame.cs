@@ -2,5 +2,5 @@
 
 public interface IDisplayGame
 {
-    void ShowCube(Faces faces);
+    void ShowCube(CubeFaces cubeFaces);
 }
